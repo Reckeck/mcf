@@ -8,6 +8,7 @@ use serde::{Deserialize, Serialize};
 use crate::{color::spaces::ColorSpace, geometry};
 
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
+#[repr(C)]
 pub enum PropertyValue {
     /// Value not set
     #[default]
@@ -23,6 +24,7 @@ pub enum PropertyValue {
 }
 
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
+#[repr(C)]
 pub struct Properties {
     inner: HashMap<String, PropertyValue>,
 }
@@ -82,5 +84,64 @@ impl Properties {
 
     pub fn clear(&mut self) {
         self.inner.clear();
+    }
+}
+
+pub mod ffi {
+    use super::*;
+    use std::collections::HashMap;
+    use std::os::raw::c_char;
+
+    #[repr(C)]
+    pub struct PropertyPair {
+        key: *const c_char,
+        value: *const PropertyValue,
+    }
+
+    pub struct PropertyMap(pub HashMap<String, PropertyValue>);
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn create_property_map() -> *mut PropertyMap {
+        let map = PropertyMap(HashMap::new());
+        Box::into_raw(Box::new(map))
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn insert_property(
+        map: *mut PropertyMap,
+        key: *const c_char,
+        value: *const PropertyValue,
+    ) {
+        if map.is_null() || key.is_null() || value.is_null() {
+            return;
+        }
+        unsafe {
+            let map = &mut *map;
+            if let Ok(key_str) = std::ffi::CStr::from_ptr(key).to_str() {
+                let value = (*value).clone();
+                map.0.insert(key_str.to_string(), value);
+            }
+        }
+    }
+
+    pub extern "C" fn remove_property(map: *mut PropertyMap, key: *const c_char) {
+        if map.is_null() || key.is_null() {
+            return;
+        }
+        unsafe {
+            let map = &mut *map;
+            if let Ok(key_str) = std::ffi::CStr::from_ptr(key).to_str() {
+                map.0.remove(key_str);
+            }
+        }
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn clear_property_map(map: *mut PropertyMap) {
+        if !map.is_null() {
+            unsafe {
+                (*map).0.clear();
+            }
+        }
     }
 }

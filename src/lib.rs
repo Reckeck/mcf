@@ -1,3 +1,6 @@
-mod geometry;
+pub mod color;
+pub mod geometry;
+pub mod structures;
 
-mod profile;
+pub mod frame;
+pub mod profile;
