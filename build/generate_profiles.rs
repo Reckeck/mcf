@@ -5,8 +5,8 @@ use std::{
 
 use serde_json::{Map, Value};
 
-static PRESETS_PATH: &'static str = "presets";
-static PRESETS_OUT: &'static str = "./src/generate/presets.rs";
+static PRESETS_PATH: &'static str = "profiles";
+static PRESETS_OUT: &'static str = "./src/generate/profiles.rs";
 
 pub fn generate_presets() -> io::Result<()> {
     println!("cargo::rerun-if-changed={:?}", Path::new(PRESETS_OUT));

@@ -1,6 +1,6 @@
-mod generate_presets;
+mod generate_profiles;
 
 fn main() {
     println!("cargo::rerun-if-changed=build/main.rs");
-    generate_presets::generate_presets().unwrap();
+    generate_profiles::generate_presets().unwrap();
 }

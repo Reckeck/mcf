@@ -113,4 +113,4 @@ impl ProfileBuilder {
     }
 }
 
-include!("./generate/presets.rs");
+include!("./generate/profiles.rs");
