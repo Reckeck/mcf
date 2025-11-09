@@ -1,0 +1,14 @@
+[package]
+name = "mcf_core"
+version = "0.1.0"
+edition = "2024"
+
+[features]
+default = []
+ffi = []
+
+[dependencies]
+mcf_math.path = "../math"
+
+serde.workspace = true
+serde_json.workspace = true

@@ -37,6 +37,7 @@ impl Frame {
     }
 }
 
+#[cfg(feature = "ffi")]
 mod ffi {
     use super::*;
 
